@@ -3,7 +3,7 @@
 #include <string.h>
 #include <sys/wait.h>
 #include <unistd.h>
-#include <limits.h>
+#include <linux/limits.h>
 
 #define ERR_ALLOC_ER "allocation error\n"
 #define RL_BUFSIZE 1024
@@ -13,9 +13,6 @@
 #define TOK_DELIM " \t\r\n\a"
 #define NAME "shell"
 #define VERSION "1"
-
-#define left() printf("\033[1D");
-#define right() printf("\033[1C");
 
 char *read_line(void);
 char **split_line(char *line);
@@ -42,9 +39,9 @@ char *builtin_str[] = {
 
 // List of the builtin functions
 int (*builtin_func[]) (char **) = {
-  &builtin_cd,
-  &builtin_help,
-  &builtin_exit
+    &builtin_cd,
+    &builtin_help,
+    &builtin_exit
 };
 
 int main(int argc, char *argv []) {
