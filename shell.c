@@ -6,15 +6,18 @@
 #include <linux/limits.h>
 #include <readline/readline.h>
 #include <readline/history.h>
+#include <signal.h>
+
+#define NAME "shell"
+#define VERSION "1"
 
 #define ERR_ALLOC_ER "allocation error\n"
+#define TOK_DELIM " \t\r\n\a"
+
 #define RL_BUFSIZE 1024
 #define TOK_BUFSIZE 64
 #define GH_BUFSIZE 64
 #define REPL_BUFSIZE 128
-#define TOK_DELIM " \t\r\n\a"
-#define NAME "shell"
-#define VERSION "1"
 
 char *read_line(char *prompt);
 char **split_line(char *line);
@@ -28,7 +31,9 @@ int num_builtins();
 int builtin_cd(char **args);
 int builtin_help(char **args);
 int builtin_exit(char **args);
-int isroot();
+void ctrl_c_handler(int signal);
+
+char cwd[PATH_MAX];
 
 // List of the names of builtin commands
 char *builtin_str[] = {
@@ -45,6 +50,9 @@ int(*builtin_func[]) (char **) = {
 };
 
 int main(int argc, char *argv []) {
+    // SIGINT is the signal sent when the user clicks ctrl c
+    // Call c ctrl_c_handler when signal SIGINT is sent
+    signal(SIGINT, ctrl_c_handler);
     main_loop();
     return 0;
 }
@@ -62,7 +70,6 @@ void main_loop(void) {
         $[3] = '\0';
     }
     do {
-        char cwd[PATH_MAX];
         if (getcwd(cwd, sizeof(cwd)) != NULL) {
             strcat(cwd, $);
             line = read_line(cwd);
@@ -75,9 +82,10 @@ void main_loop(void) {
 }
 
 char *read_line(char *prompt) {
-    char *line = malloc(sizeof(char)*100);
+    char *line = malloc(RL_BUFSIZE);
     line = readline(prompt);
-    if (line && *line){
+    if (line && *line) {
+        // Add to command history if a command was entered
         add_history(line);
     }
     return line;
@@ -198,10 +206,7 @@ int launch(char **args) {
     return 1;
 }
 
-int isroot() {
-    // Returns 1 if logged in as root
-    if (geteuid() != 0) {
-        return 0;
-    }
-    return 1;
+void ctrl_c_handler(int _signal) {
+    // Just print the prompt if ctrl c was clicked
+    printf("\n%s", cwd);
 }
