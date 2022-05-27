@@ -19,7 +19,7 @@
 #define GH_BUFSIZE 64
 #define REPL_BUFSIZE 128
 
-char *read_line(char *prompt);
+char *read_line(void);
 char **split_line(char *line);
 void main_loop(void);
 
@@ -72,7 +72,8 @@ void main_loop(void) {
     do {
         if (getcwd(cwd, sizeof(cwd)) != NULL) {
             strcat(cwd, $);
-            line = read_line(cwd);
+            printf("%s", cwd);
+            line = read_line();
         }
         args = split_line(line);
         status = execute(args);
@@ -81,14 +82,44 @@ void main_loop(void) {
     } while (status);
 }
 
-char *read_line(char *prompt) {
-    char *line = malloc(RL_BUFSIZE);
-    line = readline(prompt);
-    if (line && *line) {
-        // Add to command history if a command was entered
-        add_history(line);
+char *read_line(void) {
+    int bufsize = RL_BUFSIZE;
+    int position = 0;
+    char *buffer = malloc(sizeof(char) * bufsize);
+    // The reason c in of tye int is because you can check end of file. You cannot do that with char
+    int c;
+
+    if (!buffer) {
+        // If failed to allocate memory with malloc
+        fprintf(stderr, ERR_ALLOC_ER);
+        exit(EXIT_FAILURE);
+    }   
+    while (1) {
+        c = getchar();
+        if (c == EOF || c == '\n') {
+            // If we are at end of file or newline; add null char (\0) and return the string
+            buffer[position] = '\0';
+            return buffer;
+        }
+        else {
+            // Else; add the char to the buffer
+            buffer[position] = c;
+        }
+        position++;
+
+        // If the buffer size is reached
+        if (position >= bufsize) {
+            // Make the buffer size bigger
+            bufsize += RL_BUFSIZE;
+            // Reallocate the buffer with the new buffer size
+            buffer = realloc(buffer, bufsize);
+            // Check if the reallocation was successful
+            if (!buffer) {
+                fprintf(stderr, ERR_ALLOC_ER);
+                exit(EXIT_FAILURE);
+            }
+        }
     }
-    return line;
 }
 
 char **split_line(char *line) {
