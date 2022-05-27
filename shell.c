@@ -4,8 +4,6 @@
 #include <sys/wait.h>
 #include <unistd.h>
 #include <linux/limits.h>
-#include <readline/readline.h>
-#include <readline/history.h>
 #include <signal.h>
 
 #define NAME "shell"
