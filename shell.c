@@ -4,6 +4,8 @@
 #include <sys/wait.h>
 #include <unistd.h>
 #include <linux/limits.h>
+#include <readline/readline.h>
+#include <readline/history.h>
 
 #define ERR_ALLOC_ER "allocation error\n"
 #define RL_BUFSIZE 1024
@@ -14,7 +16,7 @@
 #define NAME "shell"
 #define VERSION "1"
 
-char *read_line(void);
+char *read_line(char *prompt);
 char **split_line(char *line);
 void main_loop(void);
 
@@ -26,9 +28,7 @@ int num_builtins();
 int builtin_cd(char **args);
 int builtin_help(char **args);
 int builtin_exit(char **args);
-char *home_dir();
-char *replace_str(char* str, char* replace, char* replace_with);
-int str_size(char* string);
+int isroot();
 
 // List of the names of builtin commands
 char *builtin_str[] = {
@@ -38,7 +38,7 @@ char *builtin_str[] = {
 };
 
 // List of the builtin functions
-int (*builtin_func[]) (char **) = {
+int(*builtin_func[]) (char **) = {
     &builtin_cd,
     &builtin_help,
     &builtin_exit
@@ -53,12 +53,20 @@ void main_loop(void) {
     char *line;
     char **args;
     int status;
+    char $[4] = " # \0";
+    // If not root
+    if (geteuid() != 0) {
+        $[0] = ' ';
+        $[1] = '$';
+        $[2] = ' ';
+        $[3] = '\0';
+    }
     do {
         char cwd[PATH_MAX];
         if (getcwd(cwd, sizeof(cwd)) != NULL) {
-            printf("%s%s", cwd, " > ");
+            strcat(cwd, $);
+            line = read_line(cwd);
         }
-        line = read_line();
         args = split_line(line);
         status = execute(args);
         free(line);
@@ -66,44 +74,13 @@ void main_loop(void) {
     } while (status);
 }
 
-char *read_line(void) {
-    int bufsize = RL_BUFSIZE;
-    int position = 0;
-    char *buffer = malloc(sizeof(char) * bufsize);
-    // The reason c in of tye int is because you can check end of file. You cannot do that with char
-    int c;
-
-    if (!buffer) {
-        // If failed to allocate memory with malloc
-        fprintf(stderr, ERR_ALLOC_ER);
-        exit(EXIT_FAILURE);
-    }   
-    while (1) {
-        c = getchar();
-        if (c == EOF || c == '\n') {
-            // If we are at end of file or newline; add null char (\0) and return the string
-            buffer[position] = '\0';
-            return buffer;
-        }
-        else {
-            // Else; add the char to the buffer
-            buffer[position] = c;
-        }
-        position++;
-
-        // If the buffer size is reached
-        if (position >= bufsize) {
-            // Make the buffer size bigger
-            bufsize += RL_BUFSIZE;
-            // Reallocate the buffer with the new buffer size
-            buffer = realloc(buffer, bufsize);
-            // Check if the reallocation was successful
-            if (!buffer) {
-                fprintf(stderr, ERR_ALLOC_ER);
-                exit(EXIT_FAILURE);
-            }
-        }
+char *read_line(char *prompt) {
+    char *line = malloc(sizeof(char)*100);
+    line = readline(prompt);
+    if (line && *line){
+        add_history(line);
     }
+    return line;
 }
 
 char **split_line(char *line) {
@@ -163,9 +140,7 @@ int builtin_cd(char **args) {
 }
 
 int builtin_help(char **args) {
-    printf(NAME);
-    printf(" version ");
-    printf(VERSION);
+    printf("%s%s%s%s", NAME, " version ", VERSION, "\n");
     return 1;
 }
 
@@ -174,6 +149,7 @@ int builtin_exit(char **args) {
 }
 
 int num_builtins() {
+    // Returns the amount of builtin commands
     return sizeof(builtin_str) / sizeof(char *);
 }
 
@@ -222,34 +198,10 @@ int launch(char **args) {
     return 1;
 }
 
-int str_size(char* string) {
-    int i = 0;
-    while(string[i] != '\0')
-    {
-        i++;
+int isroot() {
+    // Returns 1 if logged in as root
+    if (geteuid() != 0) {
+        return 0;
     }
-    return i;
-}
-
-char *home_dir() {
-    char *path = malloc(sizeof(char) * GH_BUFSIZE);
-    // If HOME does not exist
-    if(!getenv("HOME")) {
-        return NULL;
-    }
-    // If the buffersize is too small
-    if(snprintf(path, GH_BUFSIZE, "%s", getenv("HOME")) >= GH_BUFSIZE){
-        return NULL;
-    }
-    return path;
-}
-
-char *replace_str(char* str, char* replace, char* replace_with) {
-    int strlen = str_size(replace_with);
-    char * pch;
-    pch = strstr (str, replace);
-    if (pch != NULL) {
-        strncpy(pch, replace_with, strlen);
-    }
-    return str;
+    return 1;
 }
