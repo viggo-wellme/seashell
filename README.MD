@@ -7,3 +7,8 @@ I only use C standard libraries, except one. [GNU Readline](https://tiswww.case.
 
 ### How to compile with GCC
 `gcc shell.c -o bin -lreadline` Don't forget to add `-lreadline` when running the command.
+
+### To do
+- [ ] Add alias command
+- [ ] Add piping
+- [ ] Add config file

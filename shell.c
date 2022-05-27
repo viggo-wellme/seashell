@@ -32,6 +32,7 @@ int builtin_cd(char **args);
 int builtin_help(char **args);
 int builtin_exit(char **args);
 void ctrl_c_handler(int signal);
+int is_in_string(char *string, char to_find);
 
 char cwd[PATH_MAX];
 
@@ -202,11 +203,26 @@ int launch(char **args) {
       do {
           wpid = waitpid(pid, &status, WUNTRACED);
         } while (!WIFEXITED(status) && !WIFSIGNALED(status));
-    }   
+    }
+    
     return 1;
 }
 
 void ctrl_c_handler(int _signal) {
     // Just print the prompt if ctrl c was clicked
     printf("\n%s", cwd);
+}
+
+int is_in_string(char *string, char to_find) {
+    // Returns 1 if to_find is in string
+    int i;
+    // Loop trough chars in string
+    for(i = 0; i < strlen(string); i++) {
+        // If char matches to_find; return 1
+        if (string[i] == to_find) {
+            return 1;
+        }
+    }
+    // Return 0 if no matches
+    return 0;
 }
