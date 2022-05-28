@@ -6,9 +6,13 @@ My plan for this project is to add more features. My second goal is to get bette
 I only use C standard libraries, except one. [GNU Readline](https://tiswww.case.edu/php/chet/readline/rltop.html). Make sure to install it before compiling. If you don't want to use GNU Readline, you can use the `old_input` branch instead.
 
 ### How to compile with GCC
-`gcc shell.c -o bin -lreadline` Don't forget to add `-lreadline` when running the command.
+`gcc shell.c config.c -o bin -lreadline -fcommon;` Don't forget to add `-lreadline` and `-fcommon` when running the command.
 
-### To do
-- [ ] Add alias command
-- [ ] Add piping
-- [ ] Add config file
+### How to configure the prompt
+You can easily configure the prompt in the `prompt` file. Commands are separated by semicolons. Here is an example: `P;WS;$;WS`. This creates a prompt with the current path, a whitespace, $/#, and finally, another whitespace. If you enter a command that doesn't exist, it just prints it as it is.
+|Command   |Action                                                        |
+|----------|:-------------:                                               |
+|`P`       |The current path                                              |
+|`PT`      |The current path without but it replaces the home dir with `~`|
+|`$`       |`#` if logged in as root, else `$`                            |
+|`WS`      |Whitespace                                                    |

@@ -7,21 +7,24 @@
 #include <readline/readline.h>
 #include <readline/history.h>
 #include <signal.h>
+#include "config.h"
 
 #define NAME "shell"
 #define VERSION "1"
 
 #define ERR_ALLOC_ER "allocation error\n"
-#define TOK_DELIM " \t\r\n\a"
+#define S_TOK_DELIM " \t\r\n\a"
 
 #define RL_BUFSIZE 1024
 #define TOK_BUFSIZE 64
 #define GH_BUFSIZE 64
 #define REPL_BUFSIZE 128
 
+#define PROMPT_CONF_FN "prompt"
+
 char *read_line(char *prompt);
 char **split_line(char *line);
-void main_loop(void);
+void main_loop(char **tokens);
 
 int launch(char **args);
 int execute(char **args);
@@ -33,8 +36,6 @@ int builtin_help(char **args);
 int builtin_exit(char **args);
 void ctrl_c_handler(int signal);
 int is_in_string(char *string, char to_find);
-
-char cwd[PATH_MAX];
 
 // List of the names of builtin commands
 char *builtin_str[] = {
@@ -51,29 +52,36 @@ int(*builtin_func[]) (char **) = {
 };
 
 int main(int argc, char *argv []) {
+    char *raw_prompt;
+    FILE *fptr;
+    if ((fptr = fopen(PROMPT_CONF_FN, "r")) == NULL){
+        printf("Could not open file!");
+        exit(1);
+    }
+    fscanf(fptr,"%s", raw_prompt);
+    char **tokens = tokenize(raw_prompt);
+    fclose(fptr);
+
     // SIGINT is the signal sent when the user clicks ctrl c
     // Call c ctrl_c_handler when signal SIGINT is sent
     signal(SIGINT, ctrl_c_handler);
-    main_loop();
+    main_loop(tokens);
     return 0;
 }
 
-void main_loop(void) {
+void main_loop(char **tokens) {
     char *line;
     char **args;
     int status;
-    char $[4] = " # \0";
-    // If not root
-    if (geteuid() != 0) {
-        $[0] = ' ';
-        $[1] = '$';
-        $[2] = ' ';
-        $[3] = '\0';
-    }
+    char *pr;
     do {
-        if (getcwd(cwd, sizeof(cwd)) != NULL) {
-            strcat(cwd, $);
-            line = read_line(cwd);
+        //line = read_line(generate_prompt(tokens));
+        pr = generate_prompt(tokens);
+        line = readline(pr);
+        free(pr);
+        if (line && *line) {
+            // Add to command history if a command was entered
+            add_history(line);
         }
         args = split_line(line);
         status = execute(args);
@@ -82,15 +90,6 @@ void main_loop(void) {
     } while (status);
 }
 
-char *read_line(char *prompt) {
-    char *line = malloc(RL_BUFSIZE);
-    line = readline(prompt);
-    if (line && *line) {
-        // Add to command history if a command was entered
-        add_history(line);
-    }
-    return line;
-}
 
 char **split_line(char *line) {
     // Splits a line into an array of tokens. "one two three" -> ["one", "two", "three"]
@@ -104,9 +103,9 @@ char **split_line(char *line) {
         // If failed to allocate memory with malloc
         fprintf(stderr, ERR_ALLOC_ER);
         exit(EXIT_FAILURE);
-    }   
+    }
     // Split the line
-    token = strtok(line, TOK_DELIM);
+    token = strtok(line, S_TOK_DELIM);
     while (token != NULL) {
         // Add the token to the tokens array
         tokens[position] = token;
@@ -125,7 +124,7 @@ char **split_line(char *line) {
             }
         }
 
-        token = strtok(NULL, TOK_DELIM);
+        token = strtok(NULL, S_TOK_DELIM);
     }
     // Null terminate
     tokens[position] = NULL;
@@ -165,8 +164,8 @@ int num_builtins() {
 int execute(char **args) {
     int i;
     if (args[0] == NULL) {
-        // If command is empty
-        return 1;
+        // Return 2 if command is empty
+        return 2;
     }
     
     for (i = 0; i < num_builtins(); i++) {
@@ -189,8 +188,8 @@ int launch(char **args) {
     if (pid == 0) {
         // Child process
         if (execvp(args[0], args) == -1) {
-            // If execvp returns -1; print error
-            perror(NAME);
+            // If command not found
+            printf("%s%s%s\n", NAME, ": command not found: ", args[0]);
         }
         exit(EXIT_FAILURE);
     }
@@ -210,14 +209,14 @@ int launch(char **args) {
 
 void ctrl_c_handler(int _signal) {
     // Just print the prompt if ctrl c was clicked
-    printf("\n%s", cwd);
+    printf("%s%s\n", NAME, ": to exit, use the `exit` command.");
 }
 
 int is_in_string(char *string, char to_find) {
     // Returns 1 if to_find is in string
     int i;
     // Loop trough chars in string
-    for(i = 0; i < strlen(string); i++) {
+    for (i = 0; i < strlen(string); i++) {
         // If char matches to_find; return 1
         if (string[i] == to_find) {
             return 1;
