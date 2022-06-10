@@ -20,9 +20,9 @@
 #define GH_BUFSIZE 64
 #define REPL_BUFSIZE 128
 
-#define PROMPT_CONF_FN "prompt"
+// Defualt prompt config file location
+#define DEF_PROMPT_CONF "/etc/prompt"
 
-char *read_line(char *prompt);
 char **split_line(char *line);
 void main_loop(char **tokens);
 
@@ -35,7 +35,6 @@ int builtin_cd(char **args);
 int builtin_help(char **args);
 int builtin_exit(char **args);
 void ctrl_c_handler(int signal);
-int is_in_string(char *string, char to_find);
 
 // List of the names of builtin commands
 char *builtin_str[] = {
@@ -54,8 +53,18 @@ int(*builtin_func[]) (char **) = {
 int main(int argc, char *argv []) {
     char *raw_prompt;
     FILE *fptr;
-    if ((fptr = fopen(PROMPT_CONF_FN, "r")) == NULL){
-        printf("Could not open file!");
+    char prompt_conf[PATH_MAX];
+    
+    if (argc == 1) {
+        strcpy(prompt_conf, "/etc/prompt");
+    }
+    else {
+        strcpy(prompt_conf, argv[1]);
+    }
+
+    // Open config file
+    if ((fptr = fopen(prompt_conf, "r")) == NULL){
+        perror(NAME);
         exit(1);
     }
     fscanf(fptr,"%s", raw_prompt);
@@ -126,7 +135,7 @@ char **split_line(char *line) {
 
         token = strtok(NULL, S_TOK_DELIM);
     }
-    // Null terminate
+
     tokens[position] = NULL;
     return tokens;
 }
@@ -210,18 +219,4 @@ int launch(char **args) {
 void ctrl_c_handler(int _signal) {
     // Just print the prompt if ctrl c was clicked
     printf("%s%s\n", NAME, ": to exit, use the `exit` command.");
-}
-
-int is_in_string(char *string, char to_find) {
-    // Returns 1 if to_find is in string
-    int i;
-    // Loop trough chars in string
-    for (i = 0; i < strlen(string); i++) {
-        // If char matches to_find; return 1
-        if (string[i] == to_find) {
-            return 1;
-        }
-    }
-    // Return 0 if no matches
-    return 0;
 }

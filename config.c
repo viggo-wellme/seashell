@@ -56,6 +56,36 @@ char *generate_prompt(char **tokens) {
             else if (tokens[i][0] == '$') {
                 strcat(buffer, $);
             }
+            else if (tokens[i][0] == 'R' && tokens[i][1] == 'E' && tokens[i][2] == 'D') {
+                strcat(buffer, RED);
+            }
+            else if (tokens[i][0] == 'G' && tokens[i][1] == 'R' && tokens[i][2] == 'N') {
+                strcat(buffer, GRN);
+            }
+            else if (tokens[i][0] == 'Y' && tokens[i][1] == 'E' && tokens[i][2] == 'L') {
+                strcat(buffer, YEL);
+            }
+            else if (tokens[i][0] == 'B' && tokens[i][1] == 'L' && tokens[i][2] == 'U') {
+                strcat(buffer, BLU);
+            }
+            else if (tokens[i][0] == 'M' && tokens[i][1] == 'A' && tokens[i][2] == 'G') {
+                strcat(buffer, MAG);
+            }
+            else if (tokens[i][0] == 'C' && tokens[i][1] == 'Y' && tokens[i][2] == 'N') {
+                strcat(buffer, CYN);
+            }
+            else if (tokens[i][0] == 'W' && tokens[i][1] == 'H' && tokens[i][2] == 'T') {
+                strcat(buffer, WHT);
+            }
+            else if (tokens[i][0] == 'R' && tokens[i][1] == 'E' && tokens[i][2] == 'S') {
+                strcat(buffer, RES);
+            }
+            else if (tokens[i][0] == 'B' && tokens[i][1] == 'L' && tokens[i][2] == 'D') {
+                strcat(buffer, BLD);
+            }
+            else if (tokens[i][0] == 'I' && tokens[i][1] == 'T' && tokens[i][2] == 'C') {
+                strcat(buffer, ITC);
+            }
             else {
                 strcat(buffer, tokens[i]);
             }
