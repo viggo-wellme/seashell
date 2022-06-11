@@ -1,13 +1,10 @@
+// Parses configuration files
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
 #include "config.h"
 #include <unistd.h>
 #include <linux/limits.h>
-
-char **tokenize(char *prompt);
-char *strremove(char *str, const char *sub);
-char *generate_prompt(char **tokens);
 
 char **tokenize(char* prompt) {
     // Takes a string and splits it into tokens

@@ -72,9 +72,6 @@ int main(int argc, char *argv []) {
     fscanf(fptr,"%s", raw_prompt);
     char **tokens = tokenize(raw_prompt);
     fclose(fptr);
-    
-    prompt = generate_prompt(tokens);
-
     // SIGINT is the signal sent when the user clicks ctrl c
     // Call c ctrl_c_handler when signal SIGINT is sent
     signal(SIGINT, ctrl_c_handler);
@@ -86,8 +83,12 @@ void main_loop(char **tokens) {
     char *line;
     char **args;
     int status;
+    char *pr;
     do {
-        line = readline(prompt);
+        pr = generate_prompt(tokens);
+        prompt = pr;
+        line = readline(pr);
+        free(pr);
         if (line && *line) {
             // Add to command history if a command was entered
             add_history(line);
