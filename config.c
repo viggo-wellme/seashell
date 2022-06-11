@@ -8,7 +8,6 @@
 char **tokenize(char *prompt);
 char *strremove(char *str, const char *sub);
 char *generate_prompt(char **tokens);
-char *_prompt();
 
 char **tokenize(char* prompt) {
     // Takes a string and splits it into tokens
@@ -50,40 +49,40 @@ char *generate_prompt(char **tokens) {
                     strcat(buffer, cwd);
                 }
             }            
-            else if (tokens[i][0] == 'W' && tokens[i][1] == 'S') {
+            else if (strcmp(tokens[i], "WS") == 0) {
                 strcat(buffer, " ");
             }
-            else if (tokens[i][0] == '$') {
+            else if (strcmp(tokens[i], "$") == 0) {
                 strcat(buffer, $);
             }
-            else if (tokens[i][0] == 'R' && tokens[i][1] == 'E' && tokens[i][2] == 'D') {
+            else if (strcmp(tokens[i], "RED") == 0) {
                 strcat(buffer, RED);
             }
-            else if (tokens[i][0] == 'G' && tokens[i][1] == 'R' && tokens[i][2] == 'N') {
+            else if (strcmp(tokens[i], "GRN") == 0) {
                 strcat(buffer, GRN);
             }
-            else if (tokens[i][0] == 'Y' && tokens[i][1] == 'E' && tokens[i][2] == 'L') {
+            else if (strcmp(tokens[i], "YEL") == 0) {
                 strcat(buffer, YEL);
             }
-            else if (tokens[i][0] == 'B' && tokens[i][1] == 'L' && tokens[i][2] == 'U') {
+            else if (strcmp(tokens[i], "BLU") == 0) {
                 strcat(buffer, BLU);
             }
-            else if (tokens[i][0] == 'M' && tokens[i][1] == 'A' && tokens[i][2] == 'G') {
+            else if (strcmp(tokens[i], "MAG") == 0) {
                 strcat(buffer, MAG);
             }
-            else if (tokens[i][0] == 'C' && tokens[i][1] == 'Y' && tokens[i][2] == 'N') {
+            else if (strcmp(tokens[i], "CYN") == 0) {
                 strcat(buffer, CYN);
             }
-            else if (tokens[i][0] == 'W' && tokens[i][1] == 'H' && tokens[i][2] == 'T') {
+            else if (strcmp(tokens[i], "WHT") == 0) {
                 strcat(buffer, WHT);
             }
-            else if (tokens[i][0] == 'R' && tokens[i][1] == 'E' && tokens[i][2] == 'S') {
+            else if (strcmp(tokens[i], "RES") == 0) {
                 strcat(buffer, RES);
             }
-            else if (tokens[i][0] == 'B' && tokens[i][1] == 'L' && tokens[i][2] == 'D') {
+            else if (strcmp(tokens[i], "BLD") == 0) {
                 strcat(buffer, BLD);
             }
-            else if (tokens[i][0] == 'I' && tokens[i][1] == 'T' && tokens[i][2] == 'C') {
+            else if (strcmp(tokens[i], "ITC") == 0) {
                 strcat(buffer, ITC);
             }
             else {
@@ -91,8 +90,6 @@ char *generate_prompt(char **tokens) {
             }
         }
     }
-    // Clear cwd
-    memset(cwd, 0, strlen(cwd));
     return buffer;
 }
 

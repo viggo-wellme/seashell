@@ -58,7 +58,7 @@ int main(int argc, char *argv []) {
     char prompt_conf[PATH_MAX];
     
     if (argc == 1) {
-        strcpy(prompt_conf, "/etc/prompt");
+        strcpy(prompt_conf, DEF_PROMPT_CONF);
     }
     else {
         strcpy(prompt_conf, argv[1]);
@@ -72,7 +72,7 @@ int main(int argc, char *argv []) {
     fscanf(fptr,"%s", raw_prompt);
     char **tokens = tokenize(raw_prompt);
     fclose(fptr);
-
+    
     prompt = generate_prompt(tokens);
 
     // SIGINT is the signal sent when the user clicks ctrl c
@@ -157,7 +157,11 @@ int builtin_cd(char **args) {
 }
 
 int builtin_help(char **args) {
-    printf("%s%s%s%s", NAME, " version ", VERSION, "\n");
+    int i;
+    printf("%s%s%s%s", NAME, " version ", VERSION, "\nBuiltin commands:\n");
+    printf(" ´help´: shows this message\n");
+    printf(" ´cd´: changes the directory. Example: ´cd dir´\n");
+    printf(" ´exit´: exits the shell\n");
     return 1;
 }
 
