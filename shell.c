@@ -36,6 +36,8 @@ int builtin_help(char **args);
 int builtin_exit(char **args);
 void ctrl_c_handler(int signal);
 
+char *prompt;
+
 // List of the names of builtin commands
 char *builtin_str[] = {
     "cd",
@@ -71,6 +73,8 @@ int main(int argc, char *argv []) {
     char **tokens = tokenize(raw_prompt);
     fclose(fptr);
 
+    prompt = generate_prompt(tokens);
+
     // SIGINT is the signal sent when the user clicks ctrl c
     // Call c ctrl_c_handler when signal SIGINT is sent
     signal(SIGINT, ctrl_c_handler);
@@ -82,12 +86,8 @@ void main_loop(char **tokens) {
     char *line;
     char **args;
     int status;
-    char *pr;
     do {
-        //line = read_line(generate_prompt(tokens));
-        pr = generate_prompt(tokens);
-        line = readline(pr);
-        free(pr);
+        line = readline(prompt);
         if (line && *line) {
             // Add to command history if a command was entered
             add_history(line);
@@ -218,5 +218,5 @@ int launch(char **args) {
 
 void ctrl_c_handler(int _signal) {
     // Just print the prompt if ctrl c was clicked
-    printf("%s%s\n", NAME, ": to exit, use the `exit` command.");
+    printf("%s%s\n%s", NAME, ": to exit, use the `exit` command.", prompt);
 }
