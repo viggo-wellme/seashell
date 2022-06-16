@@ -37,7 +37,6 @@ int builtin_exit(char **args);
 void ctrl_c_handler(int signal);
 
 char *prompt;
-
 // List of the names of builtin commands
 char *builtin_str[] = {
     "cd",
@@ -76,6 +75,7 @@ int main(int argc, char *argv []) {
     // Call c ctrl_c_handler when signal SIGINT is sent
     signal(SIGINT, ctrl_c_handler);
     main_loop(tokens);
+    free(tokens);
     return 0;
 }
 
@@ -83,12 +83,11 @@ void main_loop(char **tokens) {
     char *line;
     char **args;
     int status;
-    char *pr;
     do {
-        pr = generate_prompt(tokens);
-        prompt = pr;
-        line = readline(pr);
-        free(pr);
+        prompt = generate_prompt(tokens);
+        prompt = prompt;
+        line = readline(prompt);
+        free(prompt);
         if (line && *line) {
             // Add to command history if a command was entered
             add_history(line);
