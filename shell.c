@@ -55,8 +55,17 @@ int main(int argc, char *argv []) {
     char *raw_prompt;
     FILE *fptr;
     char prompt_conf[PATH_MAX];
+    int def_prompt_conf_exist = 0;
+    
+    if (access(DEF_PROMPT_CONF, F_OK ) == 0) {
+        def_prompt_conf_exist = 1;
+    }
     
     if (argc == 1) {
+        if (def_prompt_conf_exist == 0) {
+            printf("No config file was found at: %s\n", DEF_PROMPT_CONF);
+            exit(1);
+        }
         strcpy(prompt_conf, DEF_PROMPT_CONF);
     }
     else {
@@ -69,8 +78,8 @@ int main(int argc, char *argv []) {
         exit(1);
     }
     fscanf(fptr,"%s", raw_prompt);
-    char **tokens = tokenize(raw_prompt);
     fclose(fptr);
+    char **tokens = tokenize(raw_prompt);
     // SIGINT is the signal sent when the user clicks ctrl c
     // Call c ctrl_c_handler when signal SIGINT is sent
     signal(SIGINT, ctrl_c_handler);
@@ -204,7 +213,8 @@ int launch(char **args) {
             // If command not found
             printf("%s%s%s\n", NAME, ": command not found: ", args[0]);
         }
-        exit(EXIT_FAILURE);
+        //exit(EXIT_FAILURE);
+        return -1;
     }
     else if (pid < 0) {
         // If fork() had an error
