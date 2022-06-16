@@ -55,17 +55,8 @@ int main(int argc, char *argv []) {
     char *raw_prompt;
     FILE *fptr;
     char prompt_conf[PATH_MAX];
-    int def_prompt_conf_exist = 0;
-    
-    if (access(DEF_PROMPT_CONF, F_OK ) == 0) {
-        def_prompt_conf_exist = 1;
-    }
     
     if (argc == 1) {
-        if (def_prompt_conf_exist == 0) {
-            printf("No config file was found at: %s\n", DEF_PROMPT_CONF);
-            exit(1);
-        }
         strcpy(prompt_conf, DEF_PROMPT_CONF);
     }
     else {
