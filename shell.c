@@ -20,7 +20,7 @@
 #define GH_BUFSIZE 64
 #define REPL_BUFSIZE 128
 
-// Defualt prompt config file location
+// Default prompt config file location
 #define DEF_PROMPT_CONF "/etc/prompt"
 
 char **split_line(char *line);
