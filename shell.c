@@ -90,7 +90,6 @@ void main_loop(char **tokens) {
     int status;
     do {
         prompt = generate_prompt(tokens);
-        prompt = prompt;
         line = readline(prompt);
         free(prompt);
         if (line && *line) {
@@ -201,8 +200,7 @@ int launch(char **args) {
             // If command not found
             printf("%s%s%s\n", NAME, ": command not found: ", args[0]);
         }
-        //exit(EXIT_FAILURE);
-        return -1;
+        exit(EXIT_FAILURE);
     }
     else if (pid < 0) {
         // If fork() had an error
