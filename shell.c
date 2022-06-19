@@ -35,6 +35,7 @@ int builtin_cd(char **args);
 int builtin_help(char **args);
 int builtin_exit(char **args);
 void ctrl_c_handler(int signal);
+int file_exists(char *file);
 
 char *prompt;
 // List of the names of builtin commands
@@ -55,8 +56,12 @@ int main(int argc, char *argv []) {
     char *raw_prompt;
     FILE *fptr;
     char prompt_conf[PATH_MAX];
-    
+
     if (argc == 1) {
+        if (!file_exists(DEF_PROMPT_CONF)) {
+            printf("%s%s%s", "Tried to open `" DEF_PROMPT_CONF, "`, but it does not exist. Please create it or pass another file location as a command line argument.\n");
+            exit(EXIT_FAILURE);
+        }
         strcpy(prompt_conf, DEF_PROMPT_CONF);
     }
     else {
@@ -142,7 +147,7 @@ char **split_line(char *line) {
 
 int builtin_cd(char **args) {
     if (args[1] == NULL) {}
-    else if (chdir(args[1]) != 0){
+    else if (chdir(args[1]) != 0) {
         perror(NAME);
     }
     return 1;
@@ -216,4 +221,12 @@ int launch(char **args) {
 void ctrl_c_handler(int _signal) {
     // Just print the prompt if ctrl c was clicked
     printf("%s%s\n%s", NAME, ": to exit, use the `exit` command.", prompt);
+}
+
+int file_exists(char *file) {
+    if (access(file, F_OK ) == 0) {
+        return 1;
+    } else {
+        return 0;
+    }    
 }
