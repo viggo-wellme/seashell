@@ -141,17 +141,9 @@ char **split_line(char *line) {
 }
 
 int builtin_cd(char **args) {
-    if (args[1] == NULL) {
-        // If no argument after cd
-        char err[50] = NAME;
-        strcat(err, ": expected argument to \"cd\"\n");
-        fprintf(stderr, err);
-    }
-
-    else {
-        if (chdir(args[1]) != 0) {
-            perror(NAME);
-        }
+    if (args[1] == NULL) {}
+    else if (chdir(args[1]) != 0){
+        perror(NAME);
     }
     return 1;
 }
