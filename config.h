@@ -15,5 +15,6 @@
 char **tokenize(char* prompt);
 char *generate_prompt(char **tokens);
 char *strremove(char *str, const char *sub);
+char *home_dir_replace(char *line);
 
 #endif

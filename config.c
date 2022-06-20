@@ -45,7 +45,7 @@ char *generate_prompt(char **tokens) {
                     }
                     strcat(buffer, cwd);
                 }
-            }            
+            }
             else if (strcmp(tokens[i], "WS") == 0) {
                 strcat(buffer, " ");
             }
@@ -102,4 +102,24 @@ char *strremove(char *str, const char *sub) {
         }
     }
     return str;
+}
+
+char *home_dir_replace(char *line) {
+    int i;
+    int line_size = strlen(line);
+    char *buffer = malloc(200);
+    
+    for (i=0; i < line_size; i++) {
+        if (line[i] == '~') {
+            strcat(buffer, getenv("HOME"));
+        }
+        else {
+            char *tmp = malloc(5);
+            tmp[0] = line[i];
+            tmp[1] = '\0';
+            strcat(buffer, tmp);
+            free(tmp);
+        }
+    }
+    return buffer;
 }
