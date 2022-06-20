@@ -92,11 +92,11 @@ void main_loop(char **tokens) {
         prompt = generate_prompt(tokens);
         line = readline(prompt);
         free(prompt);
-        line = home_dir_replace(line);
         if (line && *line) {
             // Add to command history if a command was entered
             add_history(line);
         }
+        line = home_dir_replace(line);
         args = split_line(line);
         status = execute(args);
         free(line);
