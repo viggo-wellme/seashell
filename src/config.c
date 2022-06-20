@@ -114,11 +114,10 @@ char *home_dir_replace(char *line) {
             strcat(buffer, getenv("HOME"));
         }
         else {
-            char *tmp = malloc(5);
+            char tmp[2];
             tmp[0] = line[i];
             tmp[1] = '\0';
             strcat(buffer, tmp);
-            free(tmp);
         }
     }
     return buffer;
