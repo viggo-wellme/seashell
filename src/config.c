@@ -50,12 +50,12 @@ char *generate_prompt(char **tokens) {
     }
     for (i = 0; i < 50; i++) {
         if (tokens[i] != NULL) {
-            if (tokens[i][0] == 'P') {
+            if (strcmp(tokens[i], "P") == 0) {
                 if (getcwd(cwd, sizeof(cwd)) != NULL) {
                     strcat(buffer, cwd);
                 }
             }
-            else if (tokens[i][0] == 'T' && tokens[i][1] == 'P') {
+            else if (strcmp(tokens[i], "TP") == 0) {
                 if (getcwd(cwd, sizeof(cwd)) != NULL) {
                     if (strstr(cwd, getenv("HOME"))) {
                         strremove(cwd, getenv("HOME"));
