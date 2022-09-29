@@ -7,10 +7,15 @@ I only use C standard libraries, except one. [GNU Readline](https://tiswww.case.
 ### How to compile with GCC
 `gcc src/shell.c src/config.c -o bin -lreadline` Don't forget `-lreadline`.
 
+### How to run
+Run it like any other program, just add a prompt config file location as an argument. Example: `./bin example_prompt`
+
 ### How to configure the prompt
-You can easily configure the prompt. By default, the prompt configuration file is located at `/etc/prompt`. (This can be changed by adding the file location as a command line argument. Ex: `./shell /path/to/a/file`)
+You can easily configure the looks of your prompt by adding commands to your config file.
 
 Commands are separated by semicolons. Here is an example: `P;WS;$;WS`. This creates a prompt with the current path, a whitespace, $/#, and finally, another whitespace. If you enter a command that doesn't exist, it just prints it as it is.
+
+### List of commands:
 |Command   |Action                                                        |
 |----------|:-------------:                                               |
 |`P`       |The current path                                              |

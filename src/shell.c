@@ -39,9 +39,6 @@
 #define GH_BUFSIZE 64
 #define REPL_BUFSIZE 128
 
-// Default prompt config file location
-#define DEF_PROMPT_CONF "/etc/prompt"
-
 char **split_line(char *line);
 void main_loop(char **tokens);
 
@@ -77,11 +74,8 @@ int main(int argc, char *argv []) {
     char prompt_conf[PATH_MAX];
 
     if (argc == 1) {
-        if (!file_exists(DEF_PROMPT_CONF)) {
-            printf("%s%s%s", "Tried to open `" DEF_PROMPT_CONF, "`, but it does not exist. Please create it or pass another file location as a command line argument.\n");
-            exit(EXIT_FAILURE);
-        }
-        strcpy(prompt_conf, DEF_PROMPT_CONF);
+        printf("Please input a config file.\n");
+        exit(EXIT_FAILURE);
     }
     else {
         strcpy(prompt_conf, argv[1]);

@@ -23,13 +23,14 @@
 #include "config.h"
 #include <unistd.h>
 #include <linux/limits.h>
+#include <bits/local_lim.h>
 
 char **tokenize(char* prompt) {
     // Takes a string and splits it into tokens
     char *token = strtok(prompt, ";");
-    char **tokens = malloc(sizeof(char)*500);
+    char **tokens = malloc(sizeof(char)*1000);
     int pos = 0;
-    while( token != NULL ) {
+    while(token != NULL) {
         tokens[pos] = token;
         pos++;
         token = strtok(NULL, ";");    
@@ -39,16 +40,20 @@ char **tokenize(char* prompt) {
 
 char *generate_prompt(char **tokens) {
     char *buffer = malloc(200);
-    int i;
     char $[2] = "#\0";
     char cwd[PATH_MAX];
+    char hostname[HOST_NAME_MAX + 1];
 
     // If not root
     if (geteuid() != 0) {
         $[0] = '$';
         $[1] = '\0';
     }
-    for (i = 0; i < 50; i++) {
+
+    
+    gethostname(hostname, HOST_NAME_MAX + 1);
+
+    for (int i = 0; i < 50; i++) {
         if (tokens[i] != NULL) {
             if (strcmp(tokens[i], "P") == 0) {
                 if (getcwd(cwd, sizeof(cwd)) != NULL) {
@@ -70,6 +75,12 @@ char *generate_prompt(char **tokens) {
             else if (strcmp(tokens[i], "$") == 0) {
                 strcat(buffer, $);
             }
+            else if (strcmp(tokens[i], "USR") == 0) {
+                strcat(buffer, getlogin());
+            }
+            else if (strcmp(tokens[i], "HOST") == 0) {
+              	strcat(buffer, hostname);
+	    }
             else if (strcmp(tokens[i], "RED") == 0) {
                 strcat(buffer, RED);
             }
