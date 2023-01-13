@@ -1,4 +1,4 @@
-## Shell
+## Sea (C) Shell
 A simple shell. My plan for this project is to add more features. My second goal is to get better at C, and to understand it better.
 
 ### Dependencies
