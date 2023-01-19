@@ -1,5 +1,5 @@
 ## Sea (C) Shell
-A simple shell..
+A simple shell.
 
 ### Dependencies
 I only use C standard libraries, except one. [GNU Readline](https://tiswww.case.edu/php/chet/readline/rltop.html). Make sure to install it before compiling. If you don't want to use GNU Readline, you can use the `old_input` branch instead.
