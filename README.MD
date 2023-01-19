@@ -1,5 +1,5 @@
 ## Sea (C) Shell
-A simple shell. My plan for this project is to add more features. My second goal is to get better at C, and to understand it better.
+A simple shell.
 
 ### Dependencies
 I only use C standard libraries, except one. [GNU Readline](https://tiswww.case.edu/php/chet/readline/rltop.html). Make sure to install it before compiling. If you don't want to use GNU Readline, you can use the `old_input` branch instead.
