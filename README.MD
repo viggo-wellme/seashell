@@ -36,5 +36,3 @@ To add color to your prompt, use the following commands.
 |`BLD`     |Bold|
 |`ITC`     |Italic|
 |`RES`     |Reset colors.|
-
-Thank you [Stephen Brennan](https://github.com/brenns10) for [this](https://brennan.io/2015/01/16/write-a-shell-in-c/) amazing guide!
