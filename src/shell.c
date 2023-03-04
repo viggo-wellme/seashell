@@ -28,7 +28,7 @@
 #include <signal.h>
 #include "config.h"
 
-#define NAME "shell"
+#define NAME "seashell"
 #define VERSION "1"
 
 #define ERR_ALLOC_ER "allocation error\n"
@@ -40,7 +40,7 @@
 #define REPL_BUFSIZE 128
 
 char **split_line(char *line);
-void main_loop(char **tokens);
+void main_loop();
 
 int launch(char **args);
 int execute(char **args);
@@ -69,47 +69,21 @@ int(*builtin_func[]) (char **) = {
 };
 
 int main(int argc, char *argv []) {
-    char *raw_prompt;
-    FILE *fptr;
-    char prompt_conf[PATH_MAX];
-
-    if (argc == 1) {
-        printf("Please input a config file.\n");
-        exit(EXIT_FAILURE);
-    }
-    else {
-        strcpy(prompt_conf, argv[1]);
-    }
-
-    // Open config file
-    if ((fptr = fopen(prompt_conf, "r")) == NULL){
-        perror(NAME);
-        exit(1);
-    }
-    fscanf(fptr,"%s", raw_prompt);
-    fclose(fptr);
-    char **tokens = tokenize(raw_prompt);
-    // SIGINT is the signal sent when the user clicks ctrl c
-    // Call c ctrl_c_handler when signal SIGINT is sent
-    signal(SIGINT, ctrl_c_handler);
-    main_loop(tokens);
-    free(tokens);
+    main_loop();
     return 0;
 }
 
-void main_loop(char **tokens) {
+void main_loop() {
     char *line;
     char **args;
     int status;
     do {
-        prompt = generate_prompt(tokens);
-        line = readline(prompt);
-        free(prompt);
+        line = readline(gen_prompt());
         if (line && *line) {
             // Add to command history if a command was entered
             add_history(line);
         }
-        line = home_dir_replace(line);
+        //line = home_dir_replace(line);
         args = split_line(line);
         status = execute(args);
         free(line);
